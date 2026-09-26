@@ -25,13 +25,13 @@ Metodología de referencia: **CRISP-DM**.
 
 ```
 CODIGO/
-├── data/                      # Dataset descargado (git-ignorado)
-├── outputs/                   # Figuras y reportes generados
-├── 01_data_loading.py         # Fase 1 – Descarga y comprensión de datos
-├── 02_eda.py                  # Fase 3 – Análisis exploratorio de datos (EDA)
-├── 03_preprocessing.py        # Fase 2 – Preprocesamiento y limpieza
-├── 04_modeling.py             # Fase 4 – Entrenamiento y validación de modelos
-├── 05_evaluation.py           # Fase 5 – Evaluación, métricas y curvas ROC
+├── data/                        # Dataset descargado (git-ignorado)
+├── outputs/                     # Figuras y reportes generados
+├── 01_data_loading.ipynb        # Fase 1 – Descarga y comprensión de datos
+├── 02_eda.ipynb                 # Fase 3 – Análisis exploratorio de datos (EDA)
+├── 03_preprocessing.ipynb       # Fase 2 – Preprocesamiento y limpieza
+├── 04_modeling.ipynb            # Fase 4 – Entrenamiento y validación de modelos
+├── 05_evaluation.ipynb          # Fase 5 – Evaluación, métricas y curvas ROC
 ├── requirements.txt
 └── README.md
 ```
@@ -51,17 +51,19 @@ pip install -r requirements.txt
 
 ## Ejecución
 
-Ejecutar los scripts en orden:
+Abre y ejecuta los notebooks en orden desde Jupyter:
 
 ```bash
-python 01_data_loading.py
-python 02_eda.py
-python 03_preprocessing.py
-python 04_modeling.py
-python 05_evaluation.py
+jupyter notebook
 ```
 
-Las figuras se guardan en `outputs/` y las métricas se imprimen en consola.
+| Notebook | Fase CRISP-DM | Descripción |
+|---|---|---|
+| `01_data_loading.ipynb` | Fase 1 | Descarga del dataset, revisión de tipos, nulos y distribución de `stroke` |
+| `02_eda.ipynb` | Fase 3 | Histogramas, boxplots, tasa por categoría, mapa de correlación |
+| `03_preprocessing.ipynb` | Fase 2 | Imputación `bmi`, one-hot encoding, StandardScaler, SMOTE |
+| `04_modeling.ipynb` | Fase 4 | Regresión Logística + Random Forest, StratifiedKFold (k=5) |
+| `05_evaluation.ipynb` | Fase 5 | AUC-ROC, Recall, F1, curvas ROC, matrices de confusión, importancia de variables |
 
 ---
 
