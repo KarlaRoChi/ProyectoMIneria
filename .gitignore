@@ -1,0 +1,28 @@
+﻿# Dataset (no subir datos originales)
+data/healthcare-dataset-stroke-data.csv
+data/processed_train.csv
+data/processed_test.csv
+
+# Modelos serializados (archivos grandes)
+data/*.pkl
+
+# Outputs / figuras generadas
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
