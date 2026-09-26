@@ -6,9 +6,6 @@ data/processed_test.csv
 # Modelos serializados (archivos grandes)
 data/*.pkl
 
-# Outputs / figuras generadas
-outputs/
-
 # Python
 __pycache__/
 *.py[cod]
@@ -23,6 +20,9 @@ venv/
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
+
+# Utilidades temporales
+fix_notebook_ids.py
 
 # macOS
 .DS_Store
