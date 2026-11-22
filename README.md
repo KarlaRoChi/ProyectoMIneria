@@ -62,7 +62,7 @@ jupyter notebook
 | `01_data_loading.ipynb` | Fase 1 | Descarga del dataset, revisión de tipos, nulos y distribución de `stroke` |
 | `02_eda.ipynb` | Fase 3 | Histogramas, boxplots, tasa por categoría, mapa de correlación |
 | `03_preprocessing.ipynb` | Fase 2 | Imputación `bmi`, one-hot encoding, StandardScaler, SMOTE |
-| `04_modeling.ipynb` | Fase 4 | Regresión Logística + Random Forest, StratifiedKFold (k=5) |
+| `04_modeling.ipynb` | Fase 4 | Regresión Logística, Random Forest, XGBoost y LightGBM con StratifiedKFold (k=5) |
 | `05_evaluation.ipynb` | Fase 5 | AUC-ROC, Recall, F1, curvas ROC, matrices de confusión, importancia de variables |
 
 ---
@@ -79,7 +79,29 @@ jupyter notebook
 
 ## Modelos evaluados
 
-1. **Regresión Logística** — modelo base interpretable.
-2. **Random Forest** — modelo de ensamble robusto a no-linealidades.
+1. **Regresión Logística**: modelo base interpretable.
+2. **Random Forest**
+3. **XGBoost**
+4. **LightGBM**
 
-Desbalance de clases tratado con **SMOTE** y parámetro `class_weight='balanced'`.
+El desbalance de clases (~5 % de casos positivos) se trató con **SMOTE** y `class_weight='balanced'`.
+
+---
+
+## Resultados (conjunto de prueba)
+
+| Modelo | AUC-ROC |
+|---|:---:|
+| **Regresión Logística** | **0.827** |
+| XGBoost | 0.793 |
+| LightGBM | 0.791 |
+| Random Forest | 0.763 |
+
+![Curvas ROC](outputs/06_roc_curves.png)
+
+El modelo más simple, la regresión logística, obtuvo el mejor AUC; los modelos de árboles no la superaron
+con este conjunto de datos.
+
+| Matrices de confusión | Importancia de variables |
+|---|---|
+| ![](outputs/07_confusion_matrices.png) | ![](outputs/08_feature_importance.png) |
