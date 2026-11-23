@@ -28,8 +28,8 @@ CODIGO/
 ├── data/                        # Dataset descargado (git-ignorado)
 ├── outputs/                     # Figuras y reportes generados
 ├── 01_data_loading.ipynb        # Fase 1 – Descarga y comprensión de datos
-├── 02_eda.ipynb                 # Fase 3 – Análisis exploratorio de datos (EDA)
-├── 03_preprocessing.ipynb       # Fase 2 – Preprocesamiento y limpieza
+├── 02_eda.ipynb                 # Fase 2 – Análisis exploratorio de datos (EDA)
+├── 03_preprocessing.ipynb       # Fase 3 – Preprocesamiento y limpieza
 ├── 04_modeling.ipynb            # Fase 4 – Entrenamiento y validación de modelos
 ├── 05_evaluation.ipynb          # Fase 5 – Evaluación, métricas y curvas ROC
 ├── requirements.txt
@@ -57,12 +57,15 @@ Abre y ejecuta los notebooks en orden desde Jupyter:
 jupyter notebook
 ```
 
+> Usa el kernel del entorno del proyecto (`conda env create -f environment.yml` crea `mineria_stroke`).
+> Ejecuta `03_preprocessing.ipynb` antes de `04_modeling.ipynb`: genera los conjuntos procesados que usa el modelado.
+
 | Notebook | Fase CRISP-DM | Descripción |
 |---|---|---|
 | `01_data_loading.ipynb` | Fase 1 | Descarga del dataset, revisión de tipos, nulos y distribución de `stroke` |
-| `02_eda.ipynb` | Fase 3 | Histogramas, boxplots, tasa por categoría, mapa de correlación |
-| `03_preprocessing.ipynb` | Fase 2 | Imputación `bmi`, one-hot encoding, StandardScaler, SMOTE |
-| `04_modeling.ipynb` | Fase 4 | Regresión Logística, Random Forest, XGBoost y LightGBM con StratifiedKFold (k=5) |
+| `02_eda.ipynb` | Fase 2 | Histogramas, boxplots, tasa por categoría, mapa de correlación |
+| `03_preprocessing.ipynb` | Fase 3 | Imputación `bmi`, one-hot encoding, StandardScaler, SMOTE |
+| `04_modeling.ipynb` | Fase 4 | Regresión Logística, Random Forest, XGBoost y LightGBM con StratifiedKFold (k=5); SMOTE dentro de cada fold |
 | `05_evaluation.ipynb` | Fase 5 | AUC-ROC, Recall, F1, curvas ROC, matrices de confusión, importancia de variables |
 
 ---
@@ -84,7 +87,7 @@ jupyter notebook
 3. **XGBoost**
 4. **LightGBM**
 
-El desbalance de clases (~5 % de casos positivos) se trató con **SMOTE** y `class_weight='balanced'`.
+El desbalance de clases (~5 % de casos positivos) se trató con **SMOTE**, aplicado solo al entrenamiento (y dentro de cada fold durante la validación cruzada).
 
 ---
 
@@ -93,8 +96,8 @@ El desbalance de clases (~5 % de casos positivos) se trató con **SMOTE** y `cla
 | Modelo | AUC-ROC |
 |---|:---:|
 | **Regresión Logística** | **0.827** |
-| XGBoost | 0.793 |
 | LightGBM | 0.791 |
+| XGBoost | 0.780 |
 | Random Forest | 0.763 |
 
 ![Curvas ROC](outputs/06_roc_curves.png)

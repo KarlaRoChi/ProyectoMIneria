@@ -2,6 +2,7 @@
 data/healthcare-dataset-stroke-data.csv
 data/processed_train.csv
 data/processed_test.csv
+data/processed_train_unbalanced.csv
 
 # Modelos serializados (archivos grandes)
 data/*.pkl
