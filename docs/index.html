@@ -63,6 +63,11 @@
   .info ul { margin: 0; padding-left: 20px; color: var(--muted); }
   .info li { margin: 4px 0; }
   .warn { background: var(--coral-soft); border-radius: 12px; padding: 12px 14px; font-size: 14px; margin-top: 16px; }
+  .share { margin-top: 20px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .share img { width: 168px; height: 168px; border-radius: 12px; background: #fff; padding: 6px; border: 1px solid var(--line); }
+  .share h2 { margin-bottom: 8px; }
+  .share p { margin: 0 0 12px; color: var(--muted); }
+  .share code { word-break: break-all; }
   footer { text-align: center; color: var(--muted); font-size: 13px; padding: 0 16px 32px; }
   a { color: var(--violet); }
 </style>
@@ -150,6 +155,16 @@
       <li>Umbral 0.50: recall de 0.66 en prueba. Umbral 0.30 (tamizaje): recall de 0.72, a cambio de más falsas alarmas.</li>
     </ul>
     <div class="warn"><strong>Proyecto académico.</strong> No es una herramienta de diagnóstico ni sustituye la valoración médica. El modelo se entrenó con 5,110 registros públicos (Kaggle) y tiene limitaciones; por ejemplo, algunos coeficientes no siguen la intuición clínica.</div>
+  </section>
+
+  <section class="card share">
+    <img src="qr.svg" alt="Código QR con el enlace a esta página" width="168" height="168">
+    <div>
+      <h2>Comparte la página</h2>
+      <p>Escanea el código con la cámara del celular para abrir la demo.</p>
+      <p><code>https://karlarochi.github.io/ProyectoMIneria/</code></p>
+      <button class="ghost" type="button" id="copy">Copiar enlace</button>
+    </div>
   </section>
 </main>
 
@@ -239,6 +254,13 @@ $("reset").addEventListener("click", () => {
   $("out").className = "empty";
   $("out").textContent = "Llena el formulario y presiona «Calcular riesgo».";
   $("error").textContent = "";
+});
+
+$("copy").addEventListener("click", async () => {
+  const url = "https://karlarochi.github.io/ProyectoMIneria/";
+  try { await navigator.clipboard.writeText(url); $("copy").textContent = "¡Enlace copiado!"; }
+  catch { $("copy").textContent = url; }
+  setTimeout(() => { $("copy").textContent = "Copiar enlace"; }, 2500);
 });
 
 fetch("model.json").then((r) => r.json()).then((m) => {
