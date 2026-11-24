@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predicción de Stroke · Minería de Datos</title>
+<meta name="description" content="Demo del modelo de regresión logística para estimar el riesgo de accidente cerebrovascular (proyecto académico, UNAM FI).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f5fb; --card: #ffffff; --ink: #1e1d3a; --muted: #5d5b7a; --line: #e3e1f0;
+    --violet: #6c5ce7; --violet-soft: #eeecfb; --coral: #e8445a; --coral-soft: #fde8eb;
+    --teal: #16a394; --teal-soft: #dff5f2; --gold: #f2a531;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14132a; --card: #1e1d3a; --ink: #f1f0fa; --muted: #b3b1cc; --line: #34325a;
+      --violet-soft: #2b2856; --coral-soft: #3d2133; --teal-soft: #173a3c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 Inter, system-ui, sans-serif; }
+  header { background: #1e1d3a; color: #fff; padding: 40px 16px 56px; }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  header .kicker { color: var(--gold); font-weight: 600; letter-spacing: .12em; font-size: 13px; text-transform: uppercase; }
+  header h1 { margin: 8px 0 8px; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; }
+  header p { margin: 0; color: #cfcde6; max-width: 680px; }
+  main { margin: -32px auto 40px; padding: 0 16px; }
+  .grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 6px 24px rgba(30, 29, 58, .06); }
+  h2 { margin: 0 0 16px; font-size: 20px; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+  @media (max-width: 520px) { .fields { grid-template-columns: 1fr; } }
+  label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .hint { font-weight: 400; color: var(--muted); }
+  input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; background: var(--card); color: var(--ink); }
+  input:focus, select:focus { outline: 2px solid var(--violet); outline-offset: 1px; }
+  .checks { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px 24px; }
+  .checks label { display: flex; gap: 8px; align-items: center; font-weight: 500; margin: 0; }
+  .checks input { width: 18px; height: 18px; }
+  .actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 11px 18px; cursor: pointer; }
+  .primary { background: var(--violet); color: #fff; }
+  .ghost { background: var(--violet-soft); color: var(--ink); }
+  .error { color: var(--coral); font-size: 14px; margin-top: 10px; min-height: 1em; }
+  .result .big { font-size: 52px; font-weight: 700; line-height: 1; }
+  .bar { height: 12px; border-radius: 99px; background: var(--violet-soft); margin: 14px 0 6px; position: relative; overflow: hidden; }
+  .bar > span { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 99px; background: var(--violet); transition: width .4s; }
+  .ticks { position: relative; height: 18px; font-size: 12px; color: var(--muted); }
+  .ticks span { position: absolute; transform: translateX(-50%); }
+  .ticks span:first-child { transform: none; } .ticks span:last-child { transform: translateX(-100%); }
+  .verdicts { display: grid; gap: 10px; margin-top: 18px; }
+  .verdict { border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+  .verdict small { color: var(--muted); display: block; }
+  .tag { font-weight: 700; font-size: 14px; padding: 4px 10px; border-radius: 99px; white-space: nowrap; }
+  .pos { background: var(--coral-soft); } .pos .tag { background: var(--coral); color: #fff; }
+  .neg { background: var(--teal-soft); } .neg .tag { background: var(--teal); color: #fff; }
+  .empty { color: var(--muted); }
+  .note { font-size: 14px; color: var(--muted); margin-top: 16px; }
+  .info { margin-top: 20px; }
+  .info ul { margin: 0; padding-left: 20px; color: var(--muted); }
+  .info li { margin: 4px 0; }
+  .warn { background: var(--coral-soft); border-radius: 12px; padding: 12px 14px; font-size: 14px; margin-top: 16px; }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 0 16px 32px; }
+  a { color: var(--violet); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Proyecto final · Minería de Datos · UNAM FI</div>
+    <h1>¿Podemos predecir un accidente cerebrovascular?</h1>
+    <p>Ingresa los datos clínicos de una persona y el modelo del proyecto (regresión logística, AUC 0.827 en el conjunto de prueba) estima su probabilidad de stroke.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <form class="card" id="form" novalidate>
+      <h2>Datos del paciente</h2>
+      <div class="fields">
+        <div>
+          <label for="age">Edad <span class="hint">(años)</span></label>
+          <input id="age" type="number" min="0" max="120" step="1" value="67" required>
+        </div>
+        <div>
+          <label for="gender">Sexo</label>
+          <select id="gender"><option value="Female">Mujer</option><option value="Male" selected>Hombre</option></select>
+        </div>
+        <div>
+          <label for="avg_glucose_level">Glucosa promedio <span class="hint">(mg/dL)</span></label>
+          <input id="avg_glucose_level" type="number" min="40" max="400" step="0.1" value="228.7" required>
+        </div>
+        <div>
+          <label for="bmi">IMC <span class="hint">(vacío = mediana)</span></label>
+          <input id="bmi" type="number" min="10" max="100" step="0.1" value="36.6">
+        </div>
+        <div>
+          <label for="ever_married">¿Alguna vez casado/a?</label>
+          <select id="ever_married"><option value="Yes" selected>Sí</option><option value="No">No</option></select>
+        </div>
+        <div>
+          <label for="Residence_type">Residencia</label>
+          <select id="Residence_type"><option value="Urban" selected>Urbana</option><option value="Rural">Rural</option></select>
+        </div>
+        <div>
+          <label for="work_type">Tipo de trabajo</label>
+          <select id="work_type">
+            <option value="Private" selected>Sector privado</option>
+            <option value="Self-employed">Independiente</option>
+            <option value="Govt_job">Gobierno</option>
+            <option value="children">Menor de edad (niño/a)</option>
+            <option value="Never_worked">Nunca ha trabajado</option>
+          </select>
+        </div>
+        <div>
+          <label for="smoking_status">Tabaquismo</label>
+          <select id="smoking_status">
+            <option value="never smoked">Nunca ha fumado</option>
+            <option value="formerly smoked" selected>Exfumador/a</option>
+            <option value="smokes">Fuma actualmente</option>
+            <option value="Unknown">Desconocido</option>
+          </select>
+        </div>
+        <div class="checks">
+          <label><input id="hypertension" type="checkbox"> Hipertensión</label>
+          <label><input id="heart_disease" type="checkbox" checked> Enfermedad cardíaca</label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" type="submit">Calcular riesgo</button>
+        <button class="ghost" type="button" id="reset">Limpiar</button>
+      </div>
+      <div class="error" id="error" role="alert"></div>
+    </form>
+
+    <section class="card result" aria-live="polite">
+      <h2>Salida del sistema</h2>
+      <div id="out" class="empty">Cargando el modelo…</div>
+    </section>
+  </div>
+
+  <section class="card info">
+    <h2>¿Cómo funciona?</h2>
+    <ul>
+      <li>Se aplica el mismo preprocesamiento que en los notebooks: one-hot de las variables categóricas y estandarización de edad, glucosa e IMC con la media y desviación del conjunto de entrenamiento.</li>
+      <li>El modelo es la regresión logística entrenada con SMOTE en <code>04_modeling.ipynb</code>; sus coeficientes están en <a href="model.json">model.json</a>. Todo se calcula en tu navegador: ningún dato sale de esta página.</li>
+      <li>Umbral 0.50: recall de 0.66 en prueba. Umbral 0.30 (tamizaje): recall de 0.72, a cambio de más falsas alarmas.</li>
+    </ul>
+    <div class="warn"><strong>Proyecto académico.</strong> No es una herramienta de diagnóstico ni sustituye la valoración médica. El modelo se entrenó con 5,110 registros públicos (Kaggle) y tiene limitaciones; por ejemplo, algunos coeficientes no siguen la intuición clínica.</div>
+  </section>
+</main>
+
+<footer>
+  Rojas Chimal Karla Beatriz · García Gallegos Alejandro · Grupo 1 ·
+  <a href="https://github.com/KarlaRoChi/ProyectoMIneria">Código en GitHub</a>
+</footer>
+
+<script>
+let MODEL = null;
+const $ = (id) => document.getElementById(id);
+const CATS = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status"];
+
+function encode(p) {
+  const x = {};
+  for (const f of MODEL.features) x[f] = 0;
+  for (const c of ["age", "avg_glucose_level", "bmi"]) {
+    const s = MODEL.scaler[c];
+    x[c] = (p[c] - s.mean) / s.scale;
+  }
+  x.hypertension = p.hypertension;
+  x.heart_disease = p.heart_disease;
+  for (const c of CATS) {
+    const key = c + "_" + p[c];
+    if (!(key in x)) throw new Error("Categoría desconocida: " + key);
+    x[key] = 1;
+  }
+  return x;
+}
+
+function predict(p) {
+  const x = encode(p);
+  let z = MODEL.intercept;
+  MODEL.features.forEach((f, i) => { z += MODEL.coef[i] * x[f]; });
+  return 1 / (1 + Math.exp(-z));
+}
+
+function readForm() {
+  const num = (id) => $(id).value.trim() === "" ? NaN : Number($(id).value);
+  const p = {
+    age: num("age"), avg_glucose_level: num("avg_glucose_level"), bmi: num("bmi"),
+    hypertension: $("hypertension").checked ? 1 : 0, heart_disease: $("heart_disease").checked ? 1 : 0,
+  };
+  for (const c of CATS) p[c] = $(c).value;
+  if (isNaN(p.bmi)) p.bmi = MODEL.bmi_median;
+  if (isNaN(p.age) || p.age < 0 || p.age > 120) throw new Error("La edad debe estar entre 0 y 120 años.");
+  if (isNaN(p.avg_glucose_level) || p.avg_glucose_level < 40 || p.avg_glucose_level > 400) throw new Error("La glucosa debe estar entre 40 y 400 mg/dL.");
+  if (p.bmi < 10 || p.bmi > 100) throw new Error("El IMC debe estar entre 10 y 100.");
+  return p;
+}
+
+function verdict(prob, thr, label, desc) {
+  const pos = prob >= thr;
+  return `<div class="verdict ${pos ? "pos" : "neg"}"><div><strong>${label}</strong><small>${desc}</small></div>
+    <span class="tag">${pos ? "Riesgo de stroke" : "Sin riesgo"}</span></div>`;
+}
+
+function render() {
+  $("error").textContent = "";
+  let p;
+  try { p = readForm(); } catch (e) { $("error").textContent = e.message; return; }
+  const prob = predict(p);
+  const pct = (prob * 100).toFixed(1);
+  $("out").className = "";
+  $("out").innerHTML = `
+    <div class="big">${pct} %</div>
+    <div>probabilidad estimada de stroke</div>
+    <div class="bar"><span style="width:${Math.max(prob * 100, 1)}%"></span></div>
+    <div class="ticks"><span style="left:0">0</span><span style="left:30%">0.30</span><span style="left:50%">0.50</span><span style="left:100%">1</span></div>
+    <div class="verdicts">
+      ${verdict(prob, 0.5, "Umbral 0.50", "Clasificación estándar")}
+      ${verdict(prob, 0.3, "Umbral 0.30", "Tamizaje: prioriza no dejar ir casos")}
+    </div>
+    <p class="note">Tasa base del dataset: 4.9 %. ${p.bmi === MODEL.bmi_median && $("bmi").value.trim() === "" ? "IMC imputado con la mediana (" + MODEL.bmi_median + ")." : ""}</p>`;
+}
+
+function selfTest() {
+  let maxErr = 0;
+  for (const ex of MODEL.examples) maxErr = Math.max(maxErr, Math.abs(predict(ex.input) - ex.proba));
+  console.log("Self-test vs Python on", MODEL.examples.length, "test cases, max abs error:", maxErr);
+  return maxErr;
+}
+
+$("form").addEventListener("submit", (e) => { e.preventDefault(); if (MODEL) render(); });
+$("reset").addEventListener("click", () => {
+  $("form").reset();
+  $("out").className = "empty";
+  $("out").textContent = "Llena el formulario y presiona «Calcular riesgo».";
+  $("error").textContent = "";
+});
+
+fetch("model.json").then((r) => r.json()).then((m) => {
+  MODEL = m;
+  window.__selfTestError = selfTest();
+  render();
+}).catch(() => { $("out").textContent = "No se pudo cargar el modelo (model.json)."; });
+</script>
+</body>
+</html>

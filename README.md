@@ -10,6 +10,12 @@ Profesor: Mtro. Gerardo Gabriel Carrasco Zúñiga
 
 ---
 
+## Demo en línea
+
+Prueba el modelo en **https://karlarochi.github.io/ProyectoMIneria/**: se capturan los datos de una persona y la página muestra la probabilidad de stroke estimada por la regresión logística y la clasificación con los umbrales 0.50 y 0.30. El cálculo se hace en el navegador con los coeficientes de `docs/model.json`, generados con `python export_web_model.py` después de ejecutar los notebooks 03 y 04.
+
+---
+
 ## Objetivo
 
 Desarrollar un modelo de **clasificación binaria supervisada** para predecir la probabilidad de
@@ -32,6 +38,8 @@ CODIGO/
 ├── 03_preprocessing.ipynb       # Fase 3 – Preprocesamiento y limpieza
 ├── 04_modeling.ipynb            # Fase 4 – Entrenamiento y validación de modelos
 ├── 05_evaluation.ipynb          # Fase 5 – Evaluación, métricas y curvas ROC
+├── export_web_model.py          # Exporta la regresión logística a docs/model.json
+├── docs/                        # Página web (GitHub Pages) para probar el modelo
 ├── requirements.txt
 └── README.md
 ```
