@@ -3,8 +3,8 @@
 **UNAM · Facultad de Ingeniería · Minería de Datos · Grupo 1 · Semestre 2027-1**
 
 Equipo:
-- Rojas Chimal Karla Beatriz — 320048025
-- García Gallegos Alejandro — 423093137
+- Rojas Chimal Karla Beatriz — 320048025 ([@KarlaRoChi](https://github.com/KarlaRoChi))
+- García Gallegos Alejandro — 423093137 ([@AlejandroGarciaGallegos](https://github.com/AlejandroGarciaGallegos))
 
 Profesor: Mtro. Gerardo Gabriel Carrasco Zúñiga
 
